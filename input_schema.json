@@ -67,15 +67,12 @@
                 "useApifyProxy": {
                     "title": "Use Apify Proxy",
                     "type": "boolean",
-                    "description": "Enable Apify residential proxies",
-                    "editor": "checkbox"
+                    "description": "Enable Apify residential proxies"
                 },
                 "apifyProxyCountry": {
                     "title": "Proxy Country",
                     "type": "string",
                     "description": "Country code for proxy (e.g., 'US', 'GB', 'CA')",
-                    "editor": "textfield",
-                    "default": "US",
                     "example": "US"
                 }
             }
