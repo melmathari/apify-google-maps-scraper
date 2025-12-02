@@ -7,6 +7,9 @@ COPY requirements.txt ./
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install Playwright browsers (needed when using specific playwright version)
+RUN playwright install chromium
+
 # Copy the rest of the actor code
 COPY . ./
 
