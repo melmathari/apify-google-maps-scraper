@@ -72,8 +72,7 @@
                 "apifyProxyCountry": {
                     "title": "Proxy Country",
                     "type": "string",
-                    "description": "Country code for proxy (e.g., 'US', 'GB', 'CA')",
-                    "example": "US"
+                    "description": "Country code for proxy (e.g., 'US', 'GB', 'CA')"
                 }
             }
         }
