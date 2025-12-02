@@ -1,0 +1,63 @@
+{
+    "actorSpecification": 1,
+    "name": "google-maps-business-scraper",
+    "title": "Google Maps Business Scraper",
+    "description": "Extract business information from Google Maps without API key. Get names, addresses, phones, ratings, reviews, and more. Fast, reliable, and cost-effective alternative to Google Places API.",
+    "version": "1.0.0",
+    "input": "./input_schema.json",
+    "dockerfile": "./Dockerfile",
+    "readme": "./README.md",
+    "storages": {
+        "dataset": {
+            "actorSpecification": 1,
+            "title": "Google Maps Businesses",
+            "description": "Scraped business data from Google Maps",
+            "views": {
+                "overview": {
+                    "title": "Overview",
+                    "transformation": {
+                        "fields": [
+                            "title",
+                            "address",
+                            "phone",
+                            "website",
+                            "rating",
+                            "reviewsCount",
+                            "category",
+                            "placeId"
+                        ]
+                    },
+                    "display": {
+                        "component": "table",
+                        "properties": {
+                            "title": {
+                                "label": "Business Name",
+                                "format": "text"
+                            },
+                            "category": {
+                                "label": "Category",
+                                "format": "text"
+                            },
+                            "rating": {
+                                "label": "Rating",
+                                "format": "number"
+                            },
+                            "reviewsCount": {
+                                "label": "Reviews",
+                                "format": "number"
+                            },
+                            "phone": {
+                                "label": "Phone",
+                                "format": "text"
+                            },
+                            "website": {
+                                "label": "Website",
+                                "format": "link"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

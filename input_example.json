@@ -1,0 +1,11 @@
+{
+    "searchQuery": "coffee shops",
+    "location": "New York, NY",
+    "maxResults": 50,
+    "deepScrape": false,
+    "includeReviews": false,
+    "proxyConfig": {
+        "useApifyProxy": true,
+        "apifyProxyCountry": "US"
+    }
+}

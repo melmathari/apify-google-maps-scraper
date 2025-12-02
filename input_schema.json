@@ -1,0 +1,89 @@
+{
+    "title": "Google Maps Business Scraper Input",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "searchQuery": {
+            "title": "Search Query",
+            "type": "string",
+            "description": "What to search for (e.g., 'coffee shops', 'dentists', 'restaurants')",
+            "editor": "textfield",
+            "example": "coffee shops"
+        },
+        "location": {
+            "title": "Location",
+            "type": "string",
+            "description": "Where to search (city, state, country, or full address)",
+            "editor": "textfield",
+            "example": "New York, NY"
+        },
+        "maxResults": {
+            "title": "Maximum Results",
+            "type": "integer",
+            "description": "Maximum number of businesses to scrape",
+            "editor": "number",
+            "default": 100,
+            "minimum": 1,
+            "maximum": 500,
+            "example": 100
+        },
+        "deepScrape": {
+            "title": "Deep Scrape (Click into details)",
+            "type": "boolean",
+            "description": "If enabled, clicks into each business for additional details (slower but more data)",
+            "editor": "checkbox",
+            "default": false
+        },
+        "includeReviews": {
+            "title": "Include Reviews",
+            "type": "boolean",
+            "description": "Extract customer reviews (requires deep scrape, significantly slower)",
+            "editor": "checkbox",
+            "default": false
+        },
+        "reviewsPerBusiness": {
+            "title": "Reviews Per Business",
+            "type": "integer",
+            "description": "How many reviews to extract per business (if reviews enabled)",
+            "editor": "number",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 100
+        },
+        "language": {
+            "title": "Language",
+            "type": "string",
+            "description": "Language code for results (e.g., 'en', 'es', 'fr')",
+            "editor": "textfield",
+            "default": "en",
+            "example": "en"
+        },
+        "proxyConfig": {
+            "title": "Proxy Configuration",
+            "type": "object",
+            "description": "Proxy settings for scraping",
+            "editor": "proxy",
+            "properties": {
+                "useApifyProxy": {
+                    "title": "Use Apify Proxy",
+                    "type": "boolean",
+                    "description": "Use Apify's proxy service (recommended to avoid blocking)",
+                    "default": true,
+                    "editor": "checkbox"
+                },
+                "apifyProxyCountry": {
+                    "title": "Proxy Country",
+                    "type": "string",
+                    "description": "Country code for proxy (e.g., 'US', 'GB', 'CA')",
+                    "editor": "textfield",
+                    "default": "US",
+                    "example": "US"
+                }
+            }
+        }
+    },
+    "required": [
+        "searchQuery",
+        "location"
+    ]
+}
