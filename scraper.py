@@ -5,6 +5,7 @@ import asyncio
 import logging
 from typing import List, Dict, Any, Optional
 from playwright.async_api import Page, Browser, BrowserContext
+from apify import Actor
 from parser import GoogleMapsParser
 from utils import random_delay, get_retry_decorator, RateLimiter
 from config import GOOGLE_MAPS_URL, TIMING, SELECTORS
@@ -46,6 +47,26 @@ class GoogleMapsScraper:
         if self.context:
             await self.context.close()
         logger.info("Browser context closed")
+    
+    async def take_screenshot(self, name: str = "screenshot"):
+        """Take a screenshot and save to Apify key-value store for debugging"""
+        try:
+            if self.page:
+                screenshot_bytes = await self.page.screenshot(full_page=False)
+                await Actor.set_value(f'{name}.png', screenshot_bytes, content_type='image/png')
+                logger.info(f"Screenshot saved: {name}.png")
+                
+                # Also log the current URL and page title
+                current_url = self.page.url
+                title = await self.page.title()
+                logger.info(f"Current URL: {current_url}")
+                logger.info(f"Page title: {title}")
+                
+                # Log page HTML for debugging (first 2000 chars)
+                html_content = await self.page.content()
+                logger.info(f"Page HTML preview: {html_content[:2000]}...")
+        except Exception as e:
+            logger.error(f"Failed to take screenshot: {e}")
     
     async def handle_cookie_consent(self):
         """Handle Google's cookie consent dialog (appears in EU countries)"""
@@ -100,19 +121,30 @@ class GoogleMapsScraper:
             await self.page.goto(GOOGLE_MAPS_URL, wait_until='networkidle', timeout=30000)
             await random_delay(2, 4)
             
+            # Take screenshot after page load
+            await self.take_screenshot("01_after_page_load")
+            
             # Handle cookie consent dialog (common in EU)
             await self.handle_cookie_consent()
             await random_delay(1, 2)
+            
+            # Take screenshot after cookie consent
+            await self.take_screenshot("02_after_cookie_consent")
             
             # Build search query (query + location)
             search_text = f"{query} {location}".strip()
             logger.info(f"Searching for: {search_text}")
             
             # Find search input and enter query
-            search_input = await self.page.wait_for_selector(
-                SELECTORS['search_input'], 
-                timeout=20000
-            )
+            try:
+                search_input = await self.page.wait_for_selector(
+                    SELECTORS['search_input'], 
+                    timeout=20000
+                )
+            except Exception as e:
+                logger.error(f"Could not find search input: {e}")
+                await self.take_screenshot("ERROR_search_input_not_found")
+                raise
             
             await search_input.click()
             await random_delay(0.5, 1)
