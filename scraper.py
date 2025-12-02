@@ -47,6 +47,42 @@ class GoogleMapsScraper:
             await self.context.close()
         logger.info("Browser context closed")
     
+    async def handle_cookie_consent(self):
+        """Handle Google's cookie consent dialog (appears in EU countries)"""
+        try:
+            # Common cookie consent button selectors
+            consent_selectors = [
+                'button[aria-label*="Accept all"]',
+                'button[aria-label*="Alle akzeptieren"]',
+                'button[aria-label*="Alles accepteren"]',
+                'button[aria-label*="Tout accepter"]',
+                'form[action*="consent"] button',
+                'button:has-text("Accept all")',
+                'button:has-text("Alles accepteren")',
+                'button:has-text("I agree")',
+                'button:has-text("Akkoord")',
+                '[data-consent="accept"]',
+            ]
+            
+            for selector in consent_selectors:
+                try:
+                    consent_button = await self.page.wait_for_selector(selector, timeout=3000)
+                    if consent_button:
+                        logger.info(f"Found cookie consent button, clicking...")
+                        await consent_button.click()
+                        await random_delay(1, 2)
+                        logger.info("Cookie consent accepted")
+                        return True
+                except:
+                    continue
+            
+            logger.info("No cookie consent dialog found (or already accepted)")
+            return False
+            
+        except Exception as e:
+            logger.debug(f"Cookie consent handling: {e}")
+            return False
+
     async def search(self, query: str, location: str) -> bool:
         """
         Perform search on Google Maps
@@ -61,8 +97,12 @@ class GoogleMapsScraper:
         try:
             # Navigate to Google Maps
             logger.info(f"Navigating to Google Maps...")
-            await self.page.goto(GOOGLE_MAPS_URL, wait_until='networkidle')
+            await self.page.goto(GOOGLE_MAPS_URL, wait_until='networkidle', timeout=30000)
             await random_delay(2, 4)
+            
+            # Handle cookie consent dialog (common in EU)
+            await self.handle_cookie_consent()
+            await random_delay(1, 2)
             
             # Build search query (query + location)
             search_text = f"{query} {location}".strip()
@@ -71,7 +111,7 @@ class GoogleMapsScraper:
             # Find search input and enter query
             search_input = await self.page.wait_for_selector(
                 SELECTORS['search_input'], 
-                timeout=10000
+                timeout=20000
             )
             
             await search_input.click()
