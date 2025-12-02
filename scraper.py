@@ -52,19 +52,20 @@ class GoogleMapsScraper:
         """Take a screenshot and save to Apify key-value store for debugging"""
         try:
             if self.page:
-                screenshot_bytes = await self.page.screenshot(full_page=False)
+                # Use a short timeout for screenshot
+                screenshot_bytes = await self.page.screenshot(full_page=False, timeout=10000)
                 await Actor.set_value(f'{name}.png', screenshot_bytes, content_type='image/png')
                 logger.info(f"Screenshot saved: {name}.png")
                 
                 # Also log the current URL and page title
                 current_url = self.page.url
-                title = await self.page.title()
                 logger.info(f"Current URL: {current_url}")
-                logger.info(f"Page title: {title}")
                 
-                # Log page HTML for debugging (first 2000 chars)
-                html_content = await self.page.content()
-                logger.info(f"Page HTML preview: {html_content[:2000]}...")
+                try:
+                    title = await self.page.title()
+                    logger.info(f"Page title: {title}")
+                except:
+                    pass
         except Exception as e:
             logger.error(f"Failed to take screenshot: {e}")
     
@@ -118,8 +119,11 @@ class GoogleMapsScraper:
         try:
             # Navigate to Google Maps
             logger.info(f"Navigating to Google Maps...")
-            await self.page.goto(GOOGLE_MAPS_URL, wait_until='networkidle', timeout=30000)
-            await random_delay(2, 4)
+            # Use 'load' instead of 'networkidle' - Google Maps never truly goes idle
+            await self.page.goto(GOOGLE_MAPS_URL, wait_until='load', timeout=60000)
+            
+            # Wait a bit for the page to stabilize
+            await self.page.wait_for_timeout(5000)
             
             # Take screenshot after page load
             await self.take_screenshot("01_after_page_load")
