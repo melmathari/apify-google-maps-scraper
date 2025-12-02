@@ -67,8 +67,7 @@
                 "useApifyProxy": {
                     "title": "Use Apify Proxy",
                     "type": "boolean",
-                    "description": "Use Apify's proxy service (recommended to avoid blocking)",
-                    "default": true,
+                    "description": "Enable Apify residential proxies",
                     "editor": "checkbox"
                 },
                 "apifyProxyCountry": {
