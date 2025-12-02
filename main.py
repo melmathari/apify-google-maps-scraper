@@ -49,12 +49,13 @@ async def main():
         # Configure Apify proxy if enabled
         playwright_proxy = None
         if proxy_config.get('useApifyProxy', True):
-            proxy_url = await Actor.create_proxy_configuration()
-            if proxy_url:
+            proxy_configuration = await Actor.create_proxy_configuration()
+            if proxy_configuration:
+                proxy_url = await proxy_configuration.new_url()
                 playwright_proxy = {
-                    'server': proxy_url.get_proxy_url(),
+                    'server': proxy_url,
                 }
-                logger.info("Apify proxy configured")
+                logger.info(f"Apify proxy configured: {proxy_url[:50]}...")
         
         # Initialize Playwright
         logger.info("Starting Playwright...")
